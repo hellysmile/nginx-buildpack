@@ -16,7 +16,7 @@ http {
   gzip_types text/plain text/html text/css application/x-javascript text/xml application/xml application/xml+rss text/javascript application/json;
 
   log_format l2met 'measure.nginx.service=$request_time request_id=$http_heroku_request_id';
-  access_log logs/nginx/access.log l2met;
+  access_log logs/nginx/access.log;
   error_log logs/nginx/error.log;
 
   include mime.types;
