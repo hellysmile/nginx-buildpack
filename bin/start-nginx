@@ -60,6 +60,15 @@ fi
 	echo 'nginx' >$psmgr
 ) &
 
+# start NGINX newrelic plugin
+(
+	#We expect nginx to run in foreground.
+	#We also expect a socket to be at /tmp/nginx.socket.
+	echo 'buildpack=nginx at=newrelic_nginx_agent'
+	bin/newrelic_nginx_agent
+	echo 'newrelic_nginx_agent' >$psmgr
+) &
+
 #This read will block the process waiting on a msg to be put into the fifo.
 #If any of the processes defined above should exit,
 #a msg will be put into the fifo causing the read operation
