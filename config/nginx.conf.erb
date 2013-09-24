@@ -48,6 +48,11 @@ http {
       proxy_pass http://app_server;
     }
 
+    location /assets {
+      add_header Cache-Control public;
+      expires 1h;
+    }
+
     # Rails error pages
     error_page 500 502 503 504 /500.html;
     location = /500.html {
