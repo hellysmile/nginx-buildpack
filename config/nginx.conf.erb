@@ -48,7 +48,8 @@ http {
       proxy_pass http://app_server;
     }
 
-    location /assets {
+    # Static asset locations
+    location ~ ^/(assets img pages css heroki js) {
       add_header Cache-Control public;
       expires 1h;
     }
