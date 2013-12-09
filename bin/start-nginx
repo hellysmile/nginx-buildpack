@@ -34,7 +34,13 @@ done
         COMMAND=${@:$n}
 	echo "buildpack=nginx at=start-app cmd=$COMMAND"
 	$COMMAND
-	echo 'app' >$psmgr
+	status=$?
+	if [ $status -ne 0 ]; then
+		echo 'app-crashed' >$psmgr
+		exit $status
+	else
+		echo 'app' >$psmgr
+	fi
 ) &
 
 if [[ -z "$FORCE" ]]
