@@ -3,8 +3,8 @@
 # Requires 'vulcan' to be installed and a build server created.
 # https://devcenter.heroku.com/articles/buildpack-binaries
 
-NGINX_VERSION=1.5.2
-PCRE_VERSION=8.21
+NGINX_VERSION=1.4.4
+PCRE_VERSION=8.34
 
 nginx_tarball_url=http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz
 #pcre_tarball_url=ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-${PCRE_VERSION}.tar.bz2
@@ -28,10 +28,10 @@ cd $temp_dir
 echo "Temp dir: $temp_dir"
 
 echo "Downloading $nginx_tarball_url"
-curl $nginx_tarball_url | tar xf -
+curl $nginx_tarball_url | tar xfvz -
 
 echo "Downloading $pcre_tarball_url"
-(cd nginx-${NGINX_VERSION} && curl $pcre_tarball_url | tar xf -)
+(cd nginx-${NGINX_VERSION} && curl $pcre_tarball_url | tar xfvj -)
 
 vulcan build -o ${vulcan_archive_result} -s nginx-${NGINX_VERSION} -v -p /tmp/nginx -c "./configure --with-pcre=pcre-${PCRE_VERSION} --prefix=/tmp/nginx && make install"
 
