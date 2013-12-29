@@ -60,4 +60,4 @@ echo "Installing nginx"
 make install
 
 echo "Extracting the nginx binary into the buildback"
-cp "$nginx_release_dir/sbin/nginx" "$BUILD_DIR/"
+cp "$nginx_release_dir/sbin/nginx" "$BUILD_DIR"
