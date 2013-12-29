@@ -1,26 +1,29 @@
 #!/bin/bash
 
 NGINX_VERSION=1.4.4
-PCRE_VERSION=8.34
+PCRE_VERSION=8.32
 
 nginx_tarball_url="http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz"
-pcre_tarball_url="http://garr.dl.sourceforge.net/project/pcre/pcre/${PCRE_VERSION}/pcre-${PCRE_VERSION}.tar.bz2"
+pcre_tarball_url="ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-${PCRE_VERSION}.tar.gz"
 
 nginx_build_dir=$(mktemp -d /tmp/nginx_build.XXXXXXXXXX)
 nginx_release_dir=$(mktemp -d /tmp/nginx_release.XXXXXXXXXX)
 
-configure="--with-pcre=pcre-${PCRE_VERSION} --prefix=$nginx_release_dir"
+configure="\
+--with-pcre=pcre-./${PCRE_VERSION} \
+--prefix=$nginx_release_dir \
+"
 
 BUILD_DIR=$1
 
-cleanup() {
-  echo "Cleaning up $nginx_build_dir"
-  echo "Cleaning up $nginx_release_dir"
-  rm -rf "$nginx_build_dir"
-  rm -rf "$nginx_release_dir"
-}
+# cleanup() {
+#   echo "Cleaning up $nginx_build_dir"
+#   echo "Cleaning up $nginx_release_dir"
+#   rm -rf "$nginx_build_dir"
+#   rm -rf "$nginx_release_dir"
+# }
 
-trap cleanup EXIT
+# trap cleanup EXIT
 
 cd $nginx_build_dir
 echo "Temp dir: nginx_build_dir"
