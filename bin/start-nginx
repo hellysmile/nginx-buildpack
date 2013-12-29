@@ -5,7 +5,7 @@ rm -f $psmgr
 mkfifo $psmgr
 
 #Evaluate config to get $PORT
-erb nginx.conf.erb > config/nginx.conf
+erb nginx.conf.erb > nginx_config/nginx.conf
 
 #Start log redirection.
 (
@@ -22,25 +22,9 @@ erb nginx.conf.erb > config/nginx.conf
     #We expect nginx to run in foreground.
     #We also expect a socket to be at /tmp/nginx.socket.
     echo 'buildpack=nginx at=nginx-start'
-    bin/nginx -p . -c config/nginx.conf
+    bin/nginx -p . -c nginx_config/nginx.conf
     echo 'nginx' > $psmgr
-) &
-
-#Start App Server
-(
-    #Take the command passed to this bin and start it.
-    #E.g. bin/start-nginx bundle exec unicorn -c config/unicorn.rb
-    COMMAND=${@}
-    echo "buildpack=nginx at=start-app cmd=$COMMAND"
-    $COMMAND
-    status=$?
-    if [ $status -ne 0 ]; then
-        echo 'app-crashed' > $psmgr
-        exit $status
-    else
-        echo 'app' > $psmgr
-    fi
-) &
+)
 
 #This read will block the process waiting on a msg to be put into the fifo.
 #If any of the processes defined above should exit,

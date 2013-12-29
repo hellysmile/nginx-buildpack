@@ -1,30 +1,30 @@
 #!/usr/bin/env bash
 
-set -e
+set -eo pipefail
 
-mkdir -p "$1/bin/"
-cp bin/nginx "$1/bin/"
+BUILD_DIR=$1
+CACHE_DIR=$2
+
+mkdir -p "$BUILD_DIR/bin/"
+
+./bin/compile_nginx $BUILD_DIR
+
 nginx_version=$(./bin/nginx -V 2>&1 | head -1 | awk '{ print $NF }')
 echo "-----> nginx-buildpack: Installed ${nginx_version} to app/bin"
-cp bin/start-nginx "$1/bin/"
+
+cp ./bin/start-nginx "$BUILD_DIR/bin/"
 echo '-----> nginx-buildpack: Added start-nginx to app/bin'
 
-mkdir -p "$1/logs/nginx"
+mkdir -p "$BUILD_DIR/logs/nginx"
 echo '-----> nginx-buildpack: Create logs directiry at app/logs/nginx'
 
-mkdir -p "$1/config"
-echo '-----> nginx-buildpack: Create config directiry at app/config'
+mkdir -p "$BUILD_DIR/nginx_config"
+echo '-----> nginx-buildpack: Create nginx_config directiry at app/nginx_config'
 
-cp config/mime.types "$1/config/"
-echo '-----> nginx-buildpack: Default mime.types copied to app/config/'
+cp ./nginx_config/mime.types "$BUILD_DIR/nginx_config/"
+echo '-----> nginx-buildpack: Default mime.types copied to app/nginx_config'
 
-cp config/uwsgi_params "$1/config/"
-echo '-----> nginx-buildpack: Default uwsgi_params copied to app/config/'
+cp ./nginx_config/uwsgi_params "$BUILD_DIR/nginx_config/"
+echo '-----> nginx-buildpack: Default uwsgi_params copied to app/nginx_config'
 
-if [[ ! -f $1/nginx.conf.erb ]]; then
-	cp config/nginx.conf.erb "$1"
-	echo '-----> nginx-buildpack: Default config copied to app.'
-else
-	echo '-----> nginx-buildpack: Custom config found in app.'
-fi
 exit 0
