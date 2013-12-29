@@ -10,10 +10,16 @@ cp bin/start-nginx "$1/bin/"
 echo '-----> nginx-buildpack: Added start-nginx to app/bin'
 
 mkdir -p "$1/logs/nginx"
+echo '-----> nginx-buildpack: Create logs directiry at app/logs/nginx'
+
 mkdir -p "$1/config"
+echo '-----> nginx-buildpack: Create config directiry at app/config'
 
 cp config/mime.types "$1/config/"
 echo '-----> nginx-buildpack: Default mime.types copied to app/config/'
+
+cp config/uwsgi_params "$1/config/"
+echo '-----> nginx-buildpack: Default uwsgi_params copied to app/config/'
 
 if [[ ! -f $1/nginx.conf.erb ]]; then
 	cp config/nginx.conf.erb "$1"
