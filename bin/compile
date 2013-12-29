@@ -7,7 +7,7 @@ CACHE_DIR=$2
 
 mkdir -p "$BUILD_DIR/bin/"
 
-./bin/compile_nginx $BUILD_DIR
+./bin/compile_nginx $BUILD_DIR/bin
 
 nginx_version=$(./bin/nginx -V 2>&1 | head -1 | awk '{ print $NF }')
 echo "-----> nginx-buildpack: Installed ${nginx_version} to app/bin"

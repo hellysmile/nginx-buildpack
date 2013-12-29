@@ -2,43 +2,56 @@
 
 NGINX_VERSION=1.4.4
 PCRE_VERSION=8.32
+NGX_PAGESPEED=1.7.30.1
 
-nginx_tarball_url="http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz"
-pcre_tarball_url="ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-${PCRE_VERSION}.tar.gz"
+nginx_tarball_url="http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz"
+pcre_tarball_url="ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-$PCRE_VERSION.tar.gz"
+ngx_pagespeed_url="https://codeload.github.com/pagespeed/ngx_pagespeed/tar.gz/v$NGX_PAGESPEED-beta"
+pagespeed_url="https://dl.google.com/dl/page-speed/psol/$NGX_PAGESPEED.tar.gz"
 
 nginx_build_dir=$(mktemp -d /tmp/nginx_build.XXXXXXXXXX)
 nginx_release_dir=$(mktemp -d /tmp/nginx_release.XXXXXXXXXX)
 
-configure="\
---with-pcre=pcre-./${PCRE_VERSION} \
---prefix=$nginx_release_dir \
-"
-
 BUILD_DIR=$1
 
-# cleanup() {
-#   echo "Cleaning up $nginx_build_dir"
-#   echo "Cleaning up $nginx_release_dir"
-#   rm -rf "$nginx_build_dir"
-#   rm -rf "$nginx_release_dir"
-# }
+cleanup() {
+  echo "Cleaning up $nginx_build_dir"
+  echo "Cleaning up $nginx_release_dir"
+  rm -rf "$nginx_build_dir"
+  rm -rf "$nginx_release_dir"
+}
 
-# trap cleanup EXIT
+trap cleanup EXIT
 
-cd $nginx_build_dir
-echo "Temp dir: nginx_build_dir"
+cd "$nginx_build_dir"
+echo "Temp dir: $nginx_build_dir"
 
 echo "Downloading and extracting $nginx_tarball_url"
-curl $nginx_tarball_url | tar xfvz -
+curl "$nginx_tarball_url" | tar xfvz -
 
-echo "Changing directory to nginx-${NGINX_VERSION}"
-cd nginx-${NGINX_VERSION}
+echo "Changing directory to nginx-$NGINX_VERSION"
+cd "nginx-$NGINX_VERSION"
 
-echo "Downloading and extracting  $pcre_tarball_url"
-curl $pcre_tarball_url | tar xfvj -
+echo "Downloading and extracting $pcre_tarball_url"
+curl "$pcre_tarball_url" | tar xfvz -
+
+echo "Downloading and extracting $ngx_pagespeed_url"
+curl "$ngx_pagespeed_url" | tar xfvz -
+
+echo "Changing directory to ngx_pagespeed-$NGX_PAGESPEED-beta"
+cd "ngx_pagespeed-$NGX_PAGESPEED-beta"
+
+echo "Downloading and extracting $pagespeed_url"
+curl "$pagespeed_url" | tar xfvz -
+
+echo "Changing directory to nginx-$NGINX_VERSION"
+cd ..
 
 echo "Configuring nginx"
-./configure "$configure"
+./configure \
+    --with-pcre=pcre-$PCRE_VERSION \
+    --prefix=$nginx_release_dir \
+    --add-module=ngx_pagespeed-$NGX_PAGESPEED-beta
 
 echo "Compiling nginx"
 make
@@ -47,4 +60,4 @@ echo "Installing nginx"
 make install
 
 echo "Extracting the nginx binary into the buildback"
-cp "$nginx_release_dir/sbin/nginx" "$BUILD_DIR/bin/"
+cp "$nginx_release_dir/sbin/nginx" "$BUILD_DIR/"
