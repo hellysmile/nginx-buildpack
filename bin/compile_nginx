@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+# TODO: vars, cache, show nginx version
 
 NGINX_VERSION=1.4.4
 PCRE_VERSION=8.32
@@ -39,7 +41,7 @@ echo "Downloading and extracting $ngx_pagespeed_url"
 curl "$ngx_pagespeed_url" | tar xfvz -
 
 echo "Changing directory to ngx_pagespeed-$NGX_PAGESPEED-beta"
-cd "ngx_pagespeed-$NGX_PAGESPEED-beta"
+cd "./ngx_pagespeed-$NGX_PAGESPEED-beta"
 
 echo "Downloading and extracting $pagespeed_url"
 curl "$pagespeed_url" | tar xfvz -

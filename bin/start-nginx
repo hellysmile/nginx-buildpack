@@ -9,6 +9,10 @@ erb nginx.conf.erb > nginx_config/nginx.conf
 
 #Start log redirection.
 (
+    #Cleanup nginx cache
+    rm -rf /tmp/nginx_cache_path
+    rm -rf /tmp/nginx_temp_path
+    rm -rf /tmp/ngx_pagespeed_cache
     #Initialize log directory.
     touch logs/nginx/access.log logs/nginx/error.log
     #Redirect NGINX logs to stdout.
