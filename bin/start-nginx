@@ -6,10 +6,10 @@ erb /app/nginx.conf.erb > /app/nginx/nginx.conf
 #Start log redirection.
 (
     #Initialize log directory.
-    touch /app/logs/nginx/access.log /app/logs/nginx/error.log
+    touch /app/logs/nginx_access.log /app/logs/nginx_error.log
     #Redirect NGINX logs to stdout.
     echo 'buildpack=nginx at=logs-initialized'
-    tail -qF -n 0 /app/logs/nginx/*.log
+    tail -qF -n 0 /app/logs/nginx_*.log
 ) &
 
 #Start NGINX

@@ -15,8 +15,8 @@ echo "-----> nginx-buildpack: Installed nginx to /app/nginx"
 cp ./bin/start-nginx "$BUILD_DIR/nginx/"
 echo '-----> nginx-buildpack: Added start-nginx to /app/nginx'
 
-mkdir -p "$BUILD_DIR/logs/nginx"
-echo '-----> nginx-buildpack: Create logs directiry at /app/logs/nginx'
+mkdir -p "$BUILD_DIR/logs"
+echo '-----> nginx-buildpack: Create logs directiry at /app/logs'
 
 cp ./nginx/mime.types "$BUILD_DIR/nginx/"
 echo '-----> nginx-buildpack: Default mime.types copied to /app/nginx'
