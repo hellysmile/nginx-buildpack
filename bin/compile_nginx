@@ -53,7 +53,8 @@ echo "Configuring nginx"
 ./configure \
     --with-pcre=pcre-$PCRE_VERSION \
     --prefix=$nginx_release_dir \
-    --add-module=ngx_pagespeed-$NGX_PAGESPEED-beta
+    --add-module=ngx_pagespeed-$NGX_PAGESPEED-beta \
+    --with-pcre-jit
 
 echo "Compiling nginx"
 make
