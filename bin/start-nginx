@@ -16,7 +16,7 @@ erb /app/nginx.conf.erb > /app/nginx/nginx.conf
 (
     #We expect nginx to run in foreground.
     echo 'buildpack=nginx at=nginx-start'
-    /app/nginx/nginx -c /app/nginx/nginx.conf
+    /app/nginx/nginx -p /app -c /app/nginx/nginx.conf
 )
 
 echo "buildpack=nginx at=exit process=$exit_process"
