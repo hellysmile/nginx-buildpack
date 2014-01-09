@@ -29,7 +29,9 @@ echo '-----> nginx-buildpack: Default proxy_params copied to /app/nginx'
 
 mkdir -p "$BUILD_DIR/tmp/nginx_cache_path"
 mkdir -p "$BUILD_DIR/tmp/nginx_temp_path"
-mkdir -p "$BUILD_DIR/tmp/ngx_pagespeed_cache"
+mkdir -p "$BUILD_DIR/tmp/ngx_pagespeed_cache_path"
+mkdir -p "$BUILD_DIR/tmp/client_body_temp_path"
+mkdir -p "$BUILD_DIR/tmp/uwsgi_temp_path"
 echo '-----> nginx-buildpack: Created nginx cache direcories at /app/tmp'
 
 exit 0
