@@ -14,7 +14,6 @@ erb /app/nginx.conf.erb > /app/nginx/nginx.conf
 
 #Start NGINX
 (
-    #We expect nginx to run in foreground.
     echo 'buildpack=nginx at=nginx-start'
     /app/nginx/nginx -p /app -c /app/nginx/nginx.conf
 )

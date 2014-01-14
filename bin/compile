@@ -5,34 +5,34 @@ set -eo pipefail
 BUILD_DIR=$1
 CACHE_DIR=$2
 
-mkdir -p "$BUILD_DIR/nginx/"
+mkdir -p "${BUILD_DIR}/nginx"
 echo '-----> nginx-buildpack: Create nginx directiry at /app/nginx'
 
-./bin/compile_nginx "$BUILD_DIR/nginx/"
-
-echo "-----> nginx-buildpack: Installed nginx to /app/nginx"
-
-cp ./bin/start-nginx "$BUILD_DIR/nginx/"
+cp ./bin/start-nginx "${BUILD_DIR}/nginx/"
 echo '-----> nginx-buildpack: Added start-nginx to /app/nginx'
 
-mkdir -p "$BUILD_DIR/logs"
+mkdir -p "${BUILD_DIR}/logs"
 echo '-----> nginx-buildpack: Create logs directiry at /app/logs'
 
-cp ./nginx/mime.types "$BUILD_DIR/nginx/"
+cp ./nginx/mime.types "${BUILD_DIR}/nginx/"
 echo '-----> nginx-buildpack: Default mime.types copied to /app/nginx'
 
-cp ./nginx/uwsgi_params "$BUILD_DIR/nginx/"
+cp ./nginx/uwsgi_params "${BUILD_DIR}/nginx/"
 echo '-----> nginx-buildpack: Default uwsgi_params copied to /app/nginx'
 
-cp ./nginx/proxy_params "$BUILD_DIR/nginx/"
+cp ./nginx/proxy_params "${BUILD_DIR}/nginx/"
 echo '-----> nginx-buildpack: Default proxy_params copied to /app/nginx'
 
-mkdir -p "$BUILD_DIR/tmp/nginx_cache_path"
-mkdir -p "$BUILD_DIR/tmp/nginx_temp_path"
-mkdir -p "$BUILD_DIR/tmp/ngx_pagespeed_cache_path"
-mkdir -p "$BUILD_DIR/tmp/client_body_temp_path"
-mkdir -p "$BUILD_DIR/tmp/uwsgi_temp_path"
-mkdir -p "$BUILD_DIR/tmp/nginx_pagespeed_log_path"
+mkdir -p "${BUILD_DIR}/tmp/nginx_cache_path"
+mkdir -p "${BUILD_DIR}/tmp/nginx_temp_path"
+mkdir -p "${BUILD_DIR}/tmp/ngx_pagespeed_cache_path"
+mkdir -p "${BUILD_DIR}/tmp/client_body_temp_path"
+mkdir -p "${BUILD_DIR}/tmp/uwsgi_temp_path"
+mkdir -p "${BUILD_DIR}/tmp/nginx_pagespeed_log_path"
 echo '-----> nginx-buildpack: Created nginx cache direcories at /app/tmp'
+
+./bin/compile_nginx "${BUILD_DIR}/nginx/" "${CACHE_DIR}"
+
+echo "-----> nginx-buildpack: Installed nginx to /app/nginx"
 
 exit 0

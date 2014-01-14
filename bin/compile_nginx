@@ -1,67 +1,94 @@
 #!/usr/bin/env bash
 
-# TODO: vars, cache, show nginx version
-
-NGINX_VERSION=1.4.4
-PCRE_VERSION=8.32
+NGINX_VERSION=1.5.8
+PCRE_VERSION=8.34
 NGX_PAGESPEED=1.7.30.1
 
-nginx_tarball_url="http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz"
-pcre_tarball_url="ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-$PCRE_VERSION.tar.gz"
-ngx_pagespeed_url="https://codeload.github.com/pagespeed/ngx_pagespeed/tar.gz/v$NGX_PAGESPEED-beta"
-pagespeed_url="https://dl.google.com/dl/page-speed/psol/$NGX_PAGESPEED.tar.gz"
-
-nginx_build_dir=$(mktemp -d /tmp/nginx_build.XXXXXXXXXX)
-nginx_release_dir=$(mktemp -d /tmp/nginx_release.XXXXXXXXXX)
-
 BUILD_DIR=$1
+CACHE_DIR=$2
 
-cleanup() {
-  echo "Cleaning up $nginx_build_dir"
-  echo "Cleaning up $nginx_release_dir"
-  rm -rf "$nginx_build_dir"
-  rm -rf "$nginx_release_dir"
-}
+NGINX_TARBALL_URL="http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz"
+PCRE_TARBALL_URL="ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-${PCRE_VERSION}.tar.gz"
+NGX_PAGESPEED_URL="https://codeload.github.com/pagespeed/ngx_pagespeed/tar.gz/v${NGX_PAGESPEED}-beta"
+PAGESPEED_URL="https://dl.google.com/dl/page-speed/psol/${NGX_PAGESPEED}.tar.gz"
+CACHED_MD5_HASH_FILE="${CACHE_DIR}/hash.md5"
+CACHED_MD5_HASH="unknown"
 
-trap cleanup EXIT
+NGINX_BUILD_DIR=$(mktemp -d /tmp/nginx_build.XXXXXXXXXX)
+NGINX_RELEASE_DIR=$(mktemp -d /tmp/nginx_release.XXXXXXXXXX)
 
-cd "$nginx_build_dir"
-echo "Temp dir: $nginx_build_dir"
+CONFIGURE="--with-pcre=pcre-${PCRE_VERSION}
+--with-http_realip_module
+--with-pcre-jit
+--add-module=ngx_pagespeed-${NGX_PAGESPEED}-beta"
 
-echo "Downloading and extracting $nginx_tarball_url"
-curl "$nginx_tarball_url" | tar xfvz -
+NEW_MD5_HASH=$(echo -n "${CONFIGURE}-${NGINX_VERSION}" | md5sum | cut -f1 -d' ')
 
-echo "Changing directory to nginx-$NGINX_VERSION"
-cd "nginx-$NGINX_VERSION"
+CONFIGURE="${CONFIGURE}
+--prefix=${NGINX_RELEASE_DIR}"
 
-echo "Downloading and extracting $pcre_tarball_url"
-curl "$pcre_tarball_url" | tar xfvz -
+if [ -f "${CACHED_MD5_HASH_FILE}" ] && [ -f "${CACHE_DIR}/nginx" ]; then
+    CACHED_MD5_HASH=$(cat "${CACHED_MD5_HASH_FILE}")
+fi
 
-echo "Downloading and extracting $ngx_pagespeed_url"
-curl "$ngx_pagespeed_url" | tar xfvz -
+if [ "${NEW_MD5_HASH}" = "${CACHED_MD5_HASH}" ]; then
+    echo "-----> nginx-buildpack: Cached build found"
+    echo "Extracting the nginx binary into the buildback from cache"
+    cp "${CACHE_DIR}/nginx" "${BUILD_DIR}"
+else
+    echo "-----> nginx-buildpack: Cached build not found or required version mismatch"
 
-echo "Changing directory to ngx_pagespeed-$NGX_PAGESPEED-beta"
-cd "./ngx_pagespeed-$NGX_PAGESPEED-beta"
+    cleanup() {
+      echo "Cleaning up ${NGINX_BUILD_DIR}"
+      echo "Cleaning up ${NGINX_RELEASE_DIR}"
+      rm -rf "${NGINX_BUILD_DIR}"
+      rm -rf "${NGINX_RELEASE_DIR}"
+    }
 
-echo "Downloading and extracting $pagespeed_url"
-curl "$pagespeed_url" | tar xfvz -
+    trap cleanup EXIT
 
-echo "Changing directory to nginx-$NGINX_VERSION"
-cd ..
+    cd "${NGINX_BUILD_DIR}"
+    echo "Temp dir: ${NGINX_BUILD_DIR}"
 
-echo "Configuring nginx"
-./configure \
-    --with-pcre=pcre-$PCRE_VERSION \
-    --prefix=$nginx_release_dir \
-    --add-module=ngx_pagespeed-$NGX_PAGESPEED-beta \
-    --with-pcre-jit \
-    --with-http_realip_module
+    echo "Downloading and extracting ${NGINX_TARBALL_URL}"
+    curl "${NGINX_TARBALL_URL}" | tar xfvz -
 
-echo "Compiling nginx"
-make
+    echo "Changing directory to nginx-${NGINX_VERSION}"
+    cd "nginx-${NGINX_VERSION}"
 
-echo "Installing nginx"
-make install
+    echo "Downloading and extracting ${PCRE_TARBALL_URL}"
+    curl "${PCRE_TARBALL_URL}" | tar xfvz -
 
-echo "Extracting the nginx binary into the buildback"
-cp "$nginx_release_dir/sbin/nginx" "$BUILD_DIR"
+    echo "Downloading and extracting ${NGX_PAGESPEED_URL}"
+    curl "${NGX_PAGESPEED_URL}" | tar xfvz -
+
+    echo "Changing directory to ngx_pagespeed-${NGX_PAGESPEED}-beta"
+    cd "./ngx_pagespeed-${NGX_PAGESPEED}-beta"
+
+    echo "Downloading and extracting ${PAGESPEED_URL}"
+    curl "${PAGESPEED_URL}" | tar xfvz -
+
+    echo "Changing directory to nginx-${NGINX_VERSION}"
+    cd ..
+
+    echo "Configuring nginx"
+    ./configure $(echo ${CONFIGURE})
+
+    echo "Compiling nginx"
+    make
+
+    echo "Installing nginx"
+    make install
+
+    echo "Extracting the nginx binary into the buildback"
+    cp "${NGINX_RELEASE_DIR}/sbin/nginx" "${BUILD_DIR}"
+
+    echo "Storing the nginx binary into the cache for next build"
+    cp "${NGINX_RELEASE_DIR}/sbin/nginx" "${CACHE_DIR}"
+
+    echo "Storing the nginx compile config for next build"
+    echo -n "${NEW_MD5_HASH}" > "${CACHED_MD5_HASH_FILE}"
+fi
+
+echo "-----> nginx-buildpack: nginx -V"
+$(${BUILD_DIR}/nginx -V)
