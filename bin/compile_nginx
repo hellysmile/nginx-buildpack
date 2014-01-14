@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-NGINX_VERSION=1.5.8
+set -eo pipefail
+
+NGINX_VERSION=1.4.4
 PCRE_VERSION=8.34
 NGX_PAGESPEED=1.7.30.1
 
@@ -89,3 +91,5 @@ else
     echo "Storing the nginx compile config for next build"
     echo -n "${NEW_MD5_HASH}" > "${CACHED_MD5_HASH_FILE}"
 fi
+
+exit 0
