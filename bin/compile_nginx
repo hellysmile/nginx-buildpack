@@ -19,8 +19,8 @@ NGINX_RELEASE_DIR=$(mktemp -d /tmp/nginx_release.XXXXXXXXXX)
 
 CONFIGURE="--with-pcre=pcre-${PCRE_VERSION}
 --with-http_realip_module
---with-pcre-jit
---add-module=ngx_pagespeed-${NGX_PAGESPEED}-beta"
+--with-pcre-jit"
+# --add-module=ngx_pagespeed-${NGX_PAGESPEED}-beta"
 
 NEW_MD5_HASH=$(echo -n "${CONFIGURE}-${NGINX_VERSION}" | md5sum | cut -f1 -d' ')
 
@@ -59,17 +59,17 @@ else
     echo "Downloading and extracting ${PCRE_TARBALL_URL}"
     curl "${PCRE_TARBALL_URL}" | tar xfvz -
 
-    echo "Downloading and extracting ${NGX_PAGESPEED_URL}"
-    curl "${NGX_PAGESPEED_URL}" | tar xfvz -
+    # echo "Downloading and extracting ${NGX_PAGESPEED_URL}"
+    # curl "${NGX_PAGESPEED_URL}" | tar xfvz -
 
-    echo "Changing directory to ngx_pagespeed-${NGX_PAGESPEED}-beta"
-    cd "./ngx_pagespeed-${NGX_PAGESPEED}-beta"
+    # echo "Changing directory to ngx_pagespeed-${NGX_PAGESPEED}-beta"
+    # cd "./ngx_pagespeed-${NGX_PAGESPEED}-beta"
 
-    echo "Downloading and extracting ${PAGESPEED_URL}"
-    curl "${PAGESPEED_URL}" | tar xfvz -
+    # echo "Downloading and extracting ${PAGESPEED_URL}"
+    # curl "${PAGESPEED_URL}" | tar xfvz -
 
-    echo "Changing directory to nginx-${NGINX_VERSION}"
-    cd ..
+    # echo "Changing directory to nginx-${NGINX_VERSION}"
+    # cd ..
 
     echo "Configuring nginx"
     ./configure $(echo ${CONFIGURE})
@@ -89,6 +89,3 @@ else
     echo "Storing the nginx compile config for next build"
     echo -n "${NEW_MD5_HASH}" > "${CACHED_MD5_HASH_FILE}"
 fi
-
-echo "-----> nginx-buildpack: nginx -V"
-$(${BUILD_DIR}/nginx -V)
