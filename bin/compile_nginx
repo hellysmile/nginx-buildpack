@@ -33,6 +33,7 @@ if [ -d "${CACHE_DIR}" ]; then
     echo "Cache directory found"
 else:
     mkdir "${CACHE_DIR}"
+    echo "Created cache directory"
     ls "${CACHE_DIR}"
 fi
 
