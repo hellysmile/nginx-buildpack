@@ -29,6 +29,8 @@ NEW_MD5_HASH=$(echo -n "${CONFIGURE}-${NGINX_VERSION}" | md5sum | cut -f1 -d' ')
 CONFIGURE="${CONFIGURE}
 --prefix=${NGINX_RELEASE_DIR}"
 
+echo "Using cache directory ${CACHE_DIR}"
+
 if [ -d "${CACHE_DIR}" ]; then
     echo "Cache directory found"
 else:
