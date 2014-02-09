@@ -33,10 +33,9 @@ echo "Using cache directory ${CACHE_DIR}"
 
 if [ -d "${CACHE_DIR}" ]; then
     echo "Cache directory found"
-else:
+else
     mkdir "${CACHE_DIR}"
     echo "Created cache directory"
-    ls "${CACHE_DIR}"
 fi
 
 if [ -f "${CACHED_MD5_HASH_FILE}" ] && [ -f "${CACHE_DIR}/nginx" ]; then
