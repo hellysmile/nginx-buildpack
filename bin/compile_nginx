@@ -33,7 +33,10 @@ if [ -d "${CACHE_DIR}" ]; then
     echo "Cache directory found"
 else:
     mkdir "${CACHE_DIR}"
+    ls "${CACHE_DIR}"
 fi
+
+exit 1
 
 if [ -f "${CACHED_MD5_HASH_FILE}" ] && [ -f "${CACHE_DIR}/nginx" ]; then
     CACHED_MD5_HASH=$(cat "${CACHED_MD5_HASH_FILE}")
